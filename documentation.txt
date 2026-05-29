@@ -1,0 +1,65 @@
+# Dokumentasi Proyek: Fine-Tuning Whisper (Bahasa Indonesia)
+
+Direktori ini berisi *Jupyter Notebook* (`jarvis.ipynb`) yang dikhususkan untuk melakukan eksperimen dan proses *fine-tuning* pada model **OpenAI Whisper** (versi Small) untuk pengenalan wicara (Automatic Speech Recognition/ASR) berbahasa Indonesia.
+
+## Isi Direktori
+
+- [`jarvis.ipynb`](file:///d:/Jarvis/ipynb/whisper-id-final-best/jarvis.ipynb) : Kode sumber utama dalam bentuk *Jupyter Notebook* yang memuat alur lengkap dari mulai instalasi, *preprocessing* data, hingga proses *training* dan evaluasi model.
+- [`jarvis.log`](file:///d:/Jarvis/ipynb/whisper-id-final-best/jarvis.log) : Berkas catatan eksekusi (*log*) yang menyimpan pesan sistem atau proses *training* yang pernah berjalan.
+
+## Alur Kerja (Pipeline) dalam Notebook `jarvis.ipynb`
+
+Proses yang dilakukan di dalam *notebook* terbagi menjadi 13 tahapan utama, dirancang agar ideal dijalankan pada lingkungan seperti **Kaggle Notebook**:
+
+1. **Instalasi Library yang Dibutuhkan**
+   Menginstal pustaka dari ekosistem Hugging Face (`transformers`, `datasets`, `accelerate`, `evaluate`) serta pustaka pemrosesan audio tambahan seperti `librosa`, `soundfile`, dan `jiwer`.
+2. **Import Module & Setup Lingkungan**
+   Mengimpor library dan fungsi yang dibutuhkan untuk komputasi tensor, dataset *loading*, dan metrik evaluasi.
+3. **Load Data & Konfigurasi Path**
+   Memuat dataset (berbasis **Mozilla Common Voice** bahasa Indonesia) dan mengatur alokasi path data latihan, validasi, dan tes dari format *tab-separated values* (TSV).
+4. **Preprocessing 1: Formatting Audio & Sampling Rate (16kHz)**
+   Mengekstrak dan menyesuaikan konversi frekuensi sampel (*sampling rate*) pada data audio MP3 agar sesuai dengan syarat model Whisper (yaitu *16kHz*).
+5. **Preprocessing 2: Pembersihan Teks (Cleaning)**
+   Menormalisasi teks hasil transkrip dengan membuat seluruh karakter menjadi huruf kecil (*lowercase*) serta menghilangkan seluruh tanda baca.
+6. **Inisialisasi Whisper Processor**
+   Memuat model *tokenizer* dan ekstraktor fitur bawaan `openai/whisper-small` dan menargetkan bahasa spesifik ke `Indonesian`.
+7. **Ekstraksi Fitur (Audio -> Spectrogram & Teks -> Token ID)**
+   Mengonversi audio menjadi *Log-Mel Spectrogram* dan menerjemahkan kalimat target teks ke dalam *Token IDs* yang bisa dipahami model.
+8. **Persiapan Data Collator**
+   Menyiapkan fungsi pemrosesan khusus untuk melakukan pengisian ruang kosong (*dynamic padding*) pada *batch* data, mengingat tiap berkas suara memiliki durasi yang bervariasi.
+9. **Menyiapkan Metrik Evaluasi Komprehensif**
+   Mengonfigurasi metrik tingkat industri untuk mengevaluasi akurasi model ASR, di antaranya:
+   - **WER (Word Error Rate):** Kesalahan tingkat kata.
+   - **CER (Character Error Rate):** Kesalahan tingkat karakter/huruf.
+   - **MER (Match Error Rate):** Persentase error (0% - 100%).
+   - **RTF (Real-Time Factor):** Kecepatan sistem saat memproses durasi suara vs kecepatan asli suara tersebut.
+10. **Load Model Whisper (Pre-Trained)**
+    Memuat bobot awal (*pre-trained weights*) model *Whisper Small* untuk *fine-tuning* bersyarat (berbahasa Indonesia).
+11. **Training Parameter & Trainer**
+    Menyusun konfigurasi parameter model yang cermat (*batch size*, FP16/Half-Precision, jadwal evaluasi, dsb.) dan memuatnya ke dalam Hugging Face `Seq2SeqTrainer`.
+12. **Mulai Proses Training! 🚀**
+    Proses utama *fine-tuning* pada model menggunakan data yang telah diproses.
+13. **Evaluasi Akhir & Simpan Model**
+    Melakukan pemeriksaan akhir terhadap model yang berkinerja terbaik menggunakan sub-dataset pengujian (`test`) lalu menyimpannya untuk bisa digunakan atau diunggah.
+
+## Rangkuman Log Eksekusi (`jarvis.log`)
+
+File `jarvis.log` merekam proses eksekusi dari notebook `jarvis.ipynb` dengan total waktu eksekusi sekitar 8460 detik (sekitar 2 jam 21 menit), kemungkinan di platform Kaggle.
+
+**Tahapan Utama:**
+1. **Setup & Persiapan Data (0 - 70 detik):** Instalasi, memuat dataset (4.975 latih, 3.469 dev, 3.694 uji), dan pembersihan data.
+2. **Pemrosesan Fitur (70 - 410 detik):** Inisialisasi model dan ekstraksi fitur (Spectrogram dan Token ID).
+3. **Proses Training (417 - ~8400 detik):** Porsi waktu terbanyak (sekitar 2 jam) dihabiskan untuk *fine-tuning* model. Peringatan minor dari pustaka CUDA kadang muncul namun wajar di lingkungan GPU dan tidak mengganggu proses.
+4. **Evaluasi Akhir (8447 detik):** Model dievaluasi selama ~23 menit (1382.78 detik) dengan 15301.79 detik audio data pengujian. Hasil metrik akhirnya:
+   - **WER:** 40.23%
+   - **CER:** 15.68%
+   - **MER:** 38.37%
+   - **RTF:** 0.0904 (Inferensi diproses ~11x lipat lebih cepat dari *real-time*)
+5. **Penyelesaian Akhir (8449 - 8460 detik):** Penyimpanan model sukses ("The Real Training!") dan Kaggle mengonversi *notebook* final.
+
+> **Kesimpulan:** Model Whisper Small telah sukses di-*finetune* untuk Bahasa Indonesia. Tingkat kesalahan karakter (CER) ~15% menunjukkan ejaan sangat baik. Kecepatan RTF < 0.1 juga memastikan efektivitas untuk penggunaan transkripsi waktu nyata.
+
+## Catatan Penggunaan
+
+- Skrip ini dirancang khusus untuk memproses data besar menggunakan dukungan GPU dan memori yang cukup (disarankan memanfaatkan instance seperti Kaggle dengan akselerasi perangkat keras yang memadai).
+- Karena *preprocessing* data cukup masif, direkomendasikan agar path *dataset* dikonfigurasi dengan tepat di bagian variabel `BASE_PATH` (pada sel bernomor urut awal).
