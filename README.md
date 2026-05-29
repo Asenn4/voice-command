@@ -1,4 +1,4 @@
-# 🎙️ Voice Command Automation (Jarvis)
+# 🎙️ Voice Command Automation
 
 Aplikasi Asisten Virtual Berbasis Suara (Voice Command) menggunakan **Streamlit**, **Hugging Face Transformers (Whisper)**, dan pemrosesan bahasa alami (NLP) dengan **Sastrawi** untuk memahami perintah berbahasa Indonesia. Aplikasi ini dirancang untuk dapat membuka website, menjalankan aplikasi desktop, dan mempermudah otomatisasi komputer Anda hanya melalui suara.
 
@@ -30,8 +30,11 @@ Aplikasi Asisten Virtual Berbasis Suara (Voice Command) menggunakan **Streamlit*
    ```bash
    pip install -r requirements.txt
    ```
-4. **Siapkan Model Whisper:**
-   Pastikan Anda memiliki model Whisper di komputer Anda. Secara default, aplikasi akan membaca model dari direktori `D:\Jarvis\Production\Hasil_Train`. Anda dapat mengubah variabel `model_dir` di file `app.py` jika model Anda berada di folder yang berbeda.
+4. **Siapkan Model:**
+   Pastikan Anda memiliki model di komputer Anda. Secara default, aplikasi akan membaca model dari direktori `D:\Jarvis\Production\Hasil_Train`. Anda dapat mengubah variabel `model_dir` di file `app.py` jika model Anda berada di folder yang berbeda.
+   
+   **Model Link:**
+   - Download model dari: (https://drive.google.com/file/d/1tc-2_1TUHP5F_CA85C3Dk8Q8gqmAlvIG/view?usp=sharing)
 
 ## 🚀 Cara Menggunakan
 
