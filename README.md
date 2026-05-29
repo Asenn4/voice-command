@@ -24,17 +24,27 @@ Aplikasi Asisten Virtual Berbasis Suara (Voice Command) menggunakan **Streamlit*
 1. **Clone repositori ini atau salin folder proyek ke komputer Anda.**
 2. **Masuk ke direktori aplikasi:**
    ```bash
-   cd App
+   cd <nama-folder-proyek>
    ```
-3. **Instal semua dependensi yang dibutuhkan:**
+3. **(Opsional namun disarankan) Buat dan aktifkan virtual environment:**
+   ```bash
+   python -m venv venv
+   # Di Windows:
+   venv\Scripts\activate
+   # Di Mac/Linux:
+   source venv/bin/activate
+   ```
+4. **Instal semua dependensi yang dibutuhkan:**
    ```bash
    pip install -r requirements.txt
    ```
-4. **Siapkan Model:**
-   Pastikan Anda memiliki model di komputer Anda. Secara default, aplikasi akan membaca model dari direktori `D:\Jarvis\Production\Hasil_Train`. Anda dapat mengubah variabel `model_dir` di file `app.py` jika model Anda berada di folder yang berbeda.
+   > **Tips:** Untuk menggunakan GPU NVIDIA (CUDA) agar proses lebih cepat, disarankan untuk menginstal PyTorch versi CUDA terlebih dahulu sesuai dengan petunjuk dari [situs resmi PyTorch](https://pytorch.org/).
+
+5. **Siapkan Model Whisper:**
+   Pastikan Anda memiliki model Whisper di komputer Anda. Secara default, aplikasi akan membaca model dari direktori `D:\Jarvis\Production\Hasil_Train`. Anda dapat mengubah variabel `model_dir` di file `app.py` jika model Anda berada di folder yang berbeda.
    
-   **Model Link:**
-   - Download model dari: (https://drive.google.com/file/d/1tc-2_1TUHP5F_CA85C3Dk8Q8gqmAlvIG/view?usp=sharing)
+   **Download Model:**
+   - [Download Model Whisper](https://drive.google.com/file/d/1tc-2_1TUHP5F_CA85C3Dk8Q8gqmAlvIG/view?usp=sharing)
 
 ## 🚀 Cara Menggunakan
 
