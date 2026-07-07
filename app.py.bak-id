@@ -1,6 +1,8 @@
 import streamlit as st
 from transformers import pipeline
 import torch
+from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
+from Sastrawi.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFactory
 from thefuzz import process, fuzz
 import webbrowser
 import time
@@ -12,8 +14,19 @@ from audio_recorder_streamlit import audio_recorder
 # ==========================================
 st.set_page_config(page_title="Voice Command Automation", page_icon="🎙️")
 
-def setup_nlp(text):
-    return text.lower().strip()
+@st.cache_resource
+def setup_nlp():
+    # Inisialisasi Sastrawi Stemmer
+    stemmer_factory = StemmerFactory()
+    stemmer = stemmer_factory.create_stemmer()
+    
+    # Inisialisasi Sastrawi Stopword Remover
+    stopword_factory = StopWordRemoverFactory()
+    stopword_remover = stopword_factory.create_stop_word_remover()
+    
+    return stemmer, stopword_remover
+
+stemmer, stopword_remover = setup_nlp()
 
 # ==========================================
 # 2. DEFINISI INTENT (COMMANDS)
@@ -21,26 +34,26 @@ def setup_nlp(text):
 # Daftar perintah (rules) yang dipahami oleh sistem
 COMMANDS = {
     # 🌐 DAFTAR BUKA WEBSITE
-    "open google": {"action": "open_url", "url": "https://www.google.com"},
-    "open youtube": {"action": "open_url", "url": "https://www.youtube.com"},
-    "open github": {"action": "open_url", "url": "https://github.com"},
-    "open chat gpt": {"action": "open_url", "url": "https://chatgpt.com"},
-    "open gemini": {"action": "open_url", "url": "https://gemini.google.com"},
-    "open whatsapp": {"action": "open_url", "url": "https://web.whatsapp.com"},
+    "buka google": {"action": "open_url", "url": "https://www.google.com"},
+    "buka youtube": {"action": "open_url", "url": "https://www.youtube.com"},
+    "buka github": {"action": "open_url", "url": "https://github.com"},
+    "buka chat gpt": {"action": "open_url", "url": "https://chatgpt.com"},
+    "buka gemini": {"action": "open_url", "url": "https://gemini.google.com"},
+    "buka whatsapp": {"action": "open_url", "url": "https://web.whatsapp.com"},
     
     # 💻 DAFTAR BUKA APLIKASI
-    "play music": {"action": "run_os_command", "command": "start spotify:", "message": "Opening Spotify..."},
-    "open vscode": {"action": "run_os_command", "command": "code", "message": "Opening Visual Studio Code..."},
-    "open terminal": {"action": "run_os_command", "command": "start cmd", "message": "Opening Terminal..."},
-    "open file explorer": {"action": "run_os_command", "command": "explorer", "message": "Opening File Explorer..."},
-    "open notepad": {"action": "run_os_command", "command": "notepad", "message": "Opening Notepad..."},
-    "open calculator": {"action": "run_os_command", "command": "calc", "message": "Opening Calculator..."},
-    "open word": {"action": "run_os_command", "command": "start winword", "message": "Opening Microsoft Word..."},
-    "open excel": {"action": "run_os_command", "command": "start excel", "message": "Opening Microsoft Excel..."},
-    "open powerpoint": {"action": "run_os_command", "command": "start powerpnt", "message": "Opening Microsoft PowerPoint..."},
+    "putar musik": {"action": "run_os_command", "command": "start spotify:", "message": "Membuka Spotify..."},
+    "buka vscode": {"action": "run_os_command", "command": "code", "message": "Membuka Visual Studio Code..."},
+    "buka terminal": {"action": "run_os_command", "command": "start cmd", "message": "Membuka Terminal..."},
+    "cari dokumen": {"action": "run_os_command", "command": "explorer", "message": "Membuka File Explorer..."},
+    "buka notepad": {"action": "run_os_command", "command": "notepad", "message": "Membuka Notepad..."},
+    "buka kalkulator": {"action": "run_os_command", "command": "calc", "message": "Membuka Kalkulator..."},
+    "buka word": {"action": "run_os_command", "command": "start winword", "message": "Membuka Microsoft Word..."},
+    "buka excel": {"action": "run_os_command", "command": "start excel", "message": "Membuka Microsoft Excel..."},
+    "buka powerpoint": {"action": "run_os_command", "command": "start powerpnt", "message": "Membuka Microsoft PowerPoint..."},
     
     # ⚙️ PERINTAH SISTEM LAINNYA
-    "shutdown system": {"action": "simulate_os", "message": "Shutting down system (Simulation for safety)..."}
+    "matikan sistem": {"action": "simulate_os", "message": "Sistem dimatikan (Hanya simulasi demi keamanan)..."}
 }
 
 # Ambil daftar keyword perintah untuk dicocokkan dengan thefuzz
@@ -52,7 +65,7 @@ COMMAND_KEYS = list(COMMANDS.keys())
 @st.cache_resource
 def load_asr_model():
     # Menggunakan model lokal yang sudah utuh (lengkap dengan config & tokenizer) (ganti sesuai lokasi model Anda)
-    model_dir = "./whisper-tiny-en-final"
+    model_dir = r"D:\Jarvis\Production\Hasil_Train"
     
     # Langsung muat modelnya, manfaatkan GPU jika ada untuk Voice Command agar realtime!
     device = 0 if torch.cuda.is_available() else -1
@@ -69,7 +82,7 @@ def process_voice_command(audio_bytes):
     with st.spinner("1. Mengubah Suara menjadi Teks (Whisper STT)..."):
         # Mencegah model halusinasi / berbahasa Inggris
         gen_kwargs = {
-            "language": "english",
+            "language": "indonesian",
             "task": "transcribe",
             "condition_on_prev_tokens": False
         }
@@ -78,9 +91,12 @@ def process_voice_command(audio_bytes):
     
     st.write(f"**Teks Asli (Raw):** `{raw_text}`")
     
-    # Tahap 2: NLP Preprocessing
-    with st.spinner("2. Melakukan Preprocessing Teks..."):
-        stemmed_text = setup_nlp(raw_text)
+    # Tahap 2: NLP Preprocessing (Sastrawi)
+    with st.spinner("2. Melakukan Preprocessing Teks (Sastrawi)..."):
+        # Hapus stopwords (misal: "tolong", "coba")
+        clean_text = stopword_remover.remove(raw_text)
+        # Stemming (mencari kata dasar)
+        stemmed_text = stemmer.stem(clean_text)
         
     st.write(f"**Teks Bersih (NLP):** `{stemmed_text}`")
     
