@@ -5,7 +5,7 @@ Aplikasi Asisten Virtual Berbasis Suara (Voice Command) menggunakan **Streamlit*
 ## ✨ Fitur Utama
 
 - **Speech-to-Text (ASR):** Menggunakan model lokal Whisper yang telah di-fine-tuning khusus untuk bahasa Indonesia agar responsif dan akurat.
-- **NLP Preprocessing:** Memanfaatkan *Sastrawi* (Stemmer & Stopword Remover) untuk membersihkan teks dan mencari kata dasar dari perintah suara.
+- **NLP Preprocessing:** Memanfaatkan _Sastrawi_ (Stemmer & Stopword Remover) untuk membersihkan teks dan mencari kata dasar dari perintah suara.
 - **Intent Recognition:** Menggunakan algoritma pencocokan string fuzzy (`thefuzz`) yang tahan terhadap variasi atau kalimat yang dibolak-balik.
 - **Otomatisasi PC (OS Automation):**
   - 🌐 Membuka situs web (Google, YouTube, GitHub, WhatsApp Web, ChatGPT, dll).
@@ -16,7 +16,7 @@ Aplikasi Asisten Virtual Berbasis Suara (Voice Command) menggunakan **Streamlit*
 
 - Python 3.8 atau lebih baru.
 - Mikrofon yang terhubung dan berfungsi dengan baik.
-- Disarankan menggunakan GPU yang didukung CUDA (NVIDIA) agar pengenalan suara dapat diproses secara *real-time*, meskipun CPU tetap dapat digunakan.
+- Disarankan menggunakan GPU yang didukung CUDA (NVIDIA) agar pengenalan suara dapat diproses secara _real-time_, meskipun CPU tetap dapat digunakan.
 - Model Whisper lokal yang sudah dilatih/diunduh.
 
 ## 📦 Instalasi
@@ -24,27 +24,17 @@ Aplikasi Asisten Virtual Berbasis Suara (Voice Command) menggunakan **Streamlit*
 1. **Clone repositori ini atau salin folder proyek ke komputer Anda.**
 2. **Masuk ke direktori aplikasi:**
    ```bash
-   cd <nama-folder-proyek>
+   cd App
    ```
-3. **(Opsional namun disarankan) Buat dan aktifkan virtual environment:**
-   ```bash
-   python -m venv venv
-   # Di Windows:
-   venv\Scripts\activate
-   # Di Mac/Linux:
-   source venv/bin/activate
-   ```
-4. **Instal semua dependensi yang dibutuhkan:**
+3. **Instal semua dependensi yang dibutuhkan:**
    ```bash
    pip install -r requirements.txt
    ```
-   > **Tips:** Untuk menggunakan GPU NVIDIA (CUDA) agar proses lebih cepat, disarankan untuk menginstal PyTorch versi CUDA terlebih dahulu sesuai dengan petunjuk dari [situs resmi PyTorch](https://pytorch.org/).
+4. **Siapkan Model:**
+   Pastikan Anda memiliki model di komputer Anda. Secara default, aplikasi akan membaca model dari direktori `D:\Jarvis\Production\Hasil_Train`. Anda dapat mengubah variabel `model_dir` di file `app.py` jika model Anda berada di folder yang berbeda.
 
-5. **Siapkan Model Whisper:**
-   Pastikan Anda memiliki model Whisper di komputer Anda. Secara default, aplikasi akan membaca model dari direktori `D:\Jarvis\Production\Hasil_Train`. Anda dapat mengubah variabel `model_dir` di file `app.py` jika model Anda berada di folder yang berbeda.
-   
-   **Download Model:**
-   - [Download Model Whisper](https://drive.google.com/file/d/1tc-2_1TUHP5F_CA85C3Dk8Q8gqmAlvIG/view?usp=sharing)
+   **Model Link:**
+   - Download model dari: (https://drive.google.com/file/d/1WC7r7Z5WsriPKwYX5CYDHOtwFBWWaMov/view?usp=sharing)
 
 ## 🚀 Cara Menggunakan
 
@@ -55,10 +45,10 @@ Aplikasi Asisten Virtual Berbasis Suara (Voice Command) menggunakan **Streamlit*
 2. Aplikasi akan otomatis terbuka di browser default Anda (biasanya di `http://localhost:8501`).
 3. Pada halaman utama, klik ikon **Mikrofon Besar** di tengah layar untuk mulai merekam.
 4. Ucapkan perintah Anda dengan jelas. Contoh:
-   - *"Tolong dong buka youtube"*
-   - *"Coba putar musik"*
-   - *"Buka kalkulator"*
-   - *"Buka vscode"*
+   - _"Tolong dong buka youtube"_
+   - _"Coba putar musik"_
+   - _"Buka kalkulator"_
+   - _"Buka vscode"_
 5. Tunggu sejenak, aplikasi akan:
    - Mengubah suara menjadi teks.
    - Membersihkan kata-kata tambahan (seperti "tolong" atau "coba").
@@ -67,8 +57,9 @@ Aplikasi Asisten Virtual Berbasis Suara (Voice Command) menggunakan **Streamlit*
 
 ## 📝 Konfigurasi Perintah (Commands)
 
-Anda dapat dengan mudah menambahkan perintah baru dengan mengedit variabel `COMMANDS` di dalam file `app.py`. 
+Anda dapat dengan mudah menambahkan perintah baru dengan mengedit variabel `COMMANDS` di dalam file `app.py`.
 Contoh menambahkan perintah baru:
+
 ```python
 COMMANDS = {
     # ... perintah yang sudah ada ...
