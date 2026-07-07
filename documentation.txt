@@ -63,3 +63,25 @@ File `jarvis.log` merekam proses eksekusi dari notebook `jarvis.ipynb` dengan to
 
 - Skrip ini dirancang khusus untuk memproses data besar menggunakan dukungan GPU dan memori yang cukup (disarankan memanfaatkan instance seperti Kaggle dengan akselerasi perangkat keras yang memadai).
 - Karena *preprocessing* data cukup masif, direkomendasikan agar path *dataset* dikonfigurasi dengan tepat di bagian variabel `BASE_PATH` (pada sel bernomor urut awal).
+
+## Direktori Dataset (`Dataset/cv-corpus_id`)
+
+Direktori ini berisi dataset **Mozilla Common Voice** untuk bahasa Indonesia (`id`), versi `cv-corpus-25.0-2026-03-09` yang digunakan untuk melatih dan mengevaluasi model Whisper.
+
+**Statistik Dataset:**
+- **Total Data:** 60.451 klip audio (67,02 jam rekaman).
+- **Data Tervalidasi:** 30.331 klip (33,62 jam).
+- **Jumlah Pembicara:** 666 orang.
+
+**Pembagian Data (Splits):**
+- **Train:** 4.975 klip (16,4%) - digunakan untuk melatih model.
+- **Dev / Validation:** 3.469 klip (11,4%) - digunakan memvalidasi model selama *training*.
+- **Test:** 3.694 klip (12,2%) - digunakan untuk evaluasi metrik performa akhir (WER, CER, dll).
+
+**Struktur File & Folder Utama:**
+- `clips/` : Folder yang menyimpan seluruh rekaman suara/audio.
+- `train.tsv`, `dev.tsv`, `test.tsv` : Berkas metadata berisi pemetaan antara rekaman (path) dengan transkrip teksnya untuk proses pelatihan, validasi, dan pengujian. Data ini juga memuat demografi pembicara.
+- `validated.tsv` : Daftar seluruh klip yang transkripsinya telah divalidasi kebenarannya oleh komunitas.
+- `README.md` : Dokumen bawaan resmi (datasheet) dari Mozilla Common Voice.
+
+*Catatan: Dataset ini dirilis dengan lisensi Creative Commons Zero (CC-0).*
